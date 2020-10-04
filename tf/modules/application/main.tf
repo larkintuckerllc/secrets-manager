@@ -78,3 +78,24 @@ resource "kubernetes_deployment" "this" {
     }
   }
 }
+
+resource "kubernetes_service" "this" {
+  metadata {
+    name     = local.instance
+    labels   = {
+      "app.kubernetes.io/instance" = local.instance
+      "app.kubernetes.io/name"     = local.name
+      "app.kubernetes.io/version"  = local.version
+    }
+  }
+  spec {
+    port {
+      port        = 80 
+      target_port = 8080
+    }
+    selector = {
+      instance = local.instance
+    }
+    type = "LoadBalancer"
+  }
+}
