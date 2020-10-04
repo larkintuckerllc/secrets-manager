@@ -1,18 +1,26 @@
-"""Manage Kubernetes API instance."""
+"""Manage Kubernetes API instance.
+
+Development mode, i.e., DEVELOPMENT environment variable set, requires
+the following files:
+
+- ca.crt: CA Certificate
+- token: access token
+- host: Kubernetes API URL
+"""
 from kubernetes import client
 
 from app import development
 
 
 if (development):
-    _ssl_ca_cert_file = 'ca.pem'
-    _authorization_file = 'authorization.txt'
-    with open('host.txt', 'r') as _f:
+    _ssl_ca_cert_file = 'ca.crt'
+    _authorization_file = 'token'
+    with open('host', 'r') as _f:
         _host = _f.read().strip()
-else:  # TODO FIX
-    _ssl_ca_cert_file = 'ca.pem'
-    _authorization_file = 'authorization.txt'
-    _host = 'https://35.247.94.9'
+else:
+    _ssl_ca_cert_file = '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+    _authorization_file = '/var/run/secrets/kubernetes.io/serviceaccount/token'
+    _host = 'https://kubernetes.default'
 _instance = None
 
 
