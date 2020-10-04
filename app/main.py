@@ -1,19 +1,20 @@
 """Provide Flask application."""
 from flask import Flask
-# from kubernetes.client import rest
-# from pprint import pprint
+from kubernetes.client import rest
+from pprint import pprint
 
 from app import kubernetes_api
 
 
 # TODO: WORRY ABOUT UPDATED SECRET
 # TODO: MOVE TO CORRECT API CALL
+# TODO: REMOVE DEBUGGING
 api_instance = kubernetes_api.get_instance()
-# try:
-#     api_response = api_instance.get_api_group()
-#     pprint(api_response)
-# except rest.ApiException as e:
-#     print("Exception when calling AdmissionregistrationApi->get_api_group: %s\n" % e)
+try:
+    api_response = api_instance.get_api_group()
+    pprint(api_response)
+except rest.ApiException as e:
+    print("Exception when calling AdmissionregistrationApi->get_api_group: %s\n" % e)
 
 app = Flask(__name__)
 
