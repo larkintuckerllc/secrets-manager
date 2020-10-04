@@ -35,8 +35,7 @@ def refresh_instance():
     configuration.ssl_ca_cert = _ssl_ca_cert_file
     configuration.host = _host
     with client.ApiClient(configuration) as api_client:
-        # TODO: MOVE TO CORRECT CALL
-        _instance = client.AdmissionregistrationApi(api_client)
+        _instance = client.CoreV1Api(api_client)
 
 
 def get_instance():

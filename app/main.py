@@ -3,24 +3,47 @@ from flask import Flask
 from kubernetes.client import rest
 
 from app import kubernetes_api
+import pprint
 
 
-# TODO: MOVE TO CORRECT API CALL
-# TODO: REMOVE DEBUGGING
 app = Flask(__name__)
 
 
 @app.route('/')
 def hello_world():
-    """Implement placeholder Flask route."""
+    """Execute health check."""
+    return 'healthy'
+
+
+# READ CONFIGMAPS
+
+def test(item):
+    """TODO."""
+    return ({
+        'name': item.metadata.name,
+        'data': item.data,
+    })
+
+
+def ph(api_instance):
+    """TODO."""
+    response = api_instance.list_namespaced_config_map('default')
+    configmaps = list(map(test, response.items))
+    pprint.pprint(configmaps)
+
+
+@app.route('/configmaps')
+def get_configmaps():
+    """Read ConfigMaps."""
     api_instance = kubernetes_api.get_instance()
     try:
-        api_instance.get_api_group()
-        return 'Success'
+        ph(api_instance)
+        return 'success'
     except rest.ApiException:
-        api_instance = kubernetes_api.refresh_instance()
+        kubernetes_api.refresh_instance()
+        api_instance = kubernetes_api.get_instance()
         try:
-            api_instance.get_api_group()
-            return 'Success'
+            ph(api_instance)
+            return 'success'
         except rest.ApiException as e:
             return ("%s" % e)
