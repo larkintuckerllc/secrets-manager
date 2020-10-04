@@ -1,4 +1,5 @@
 from app import main
 
 
-main.app()
+main.app.debug = True
+main.app.run()
