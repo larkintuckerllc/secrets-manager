@@ -29,22 +29,28 @@
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Provide Flask application.&#34;&#34;&#34;
 from flask import Flask
-from kubernetes import client, config
+from kubernetes.client import rest
+from pprint import pprint
+
+from app import kubernetes_api
 
 
-config.load_kube_config()
-v1 = client.CoreV1Api()
+# TODO: WORRY ABOUT UPDATED SECRET
+# TODO: MOVE TO CORRECT API CALL
+api_instance = kubernetes_api.get_instance()
+try:
+    api_response = api_instance.get_api_group()
+    pprint(api_response)
+except rest.ApiException as e:
+    print(&#34;Exception when calling AdmissionregistrationApi-&gt;get_api_group: %s\n&#34; % e)
+
 app = Flask(__name__)
 
 
 @app.route(&#39;/&#39;)
 def hello_world():
     &#34;&#34;&#34;Implement placeholder Flask route.&#34;&#34;&#34;
-    ret = v1.list_pod_for_all_namespaces(watch=False)
-    for i in ret.items:
-        print(&#34;%s\t%s\t%s&#34; % (i.status.pod_ip, i.metadata.namespace,
-                              i.metadata.name))
-    return &#39;Hello, World!&#39;</code></pre>
+    return &#39;Hello, World 2!&#39;</code></pre>
 </details>
 </section>
 <section>
@@ -66,11 +72,7 @@ def hello_world():
 <pre><code class="python">@app.route(&#39;/&#39;)
 def hello_world():
     &#34;&#34;&#34;Implement placeholder Flask route.&#34;&#34;&#34;
-    ret = v1.list_pod_for_all_namespaces(watch=False)
-    for i in ret.items:
-        print(&#34;%s\t%s\t%s&#34; % (i.status.pod_ip, i.metadata.namespace,
-                              i.metadata.name))
-    return &#39;Hello, World!&#39;</code></pre>
+    return &#39;Hello, World 2!&#39;</code></pre>
 </details>
 </dd>
 </dl>

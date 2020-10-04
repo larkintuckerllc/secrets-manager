@@ -32,12 +32,20 @@
 
 Compatible with tiangolo/meinheld-gunicorn:python3.8 Docker image.
 &#34;&#34;&#34;
-__version__ = &#39;0.1.0&#39;</code></pre>
+import os
+
+
+__version__ = &#39;0.1.0&#39;
+development = os.environ.get(&#39;DEVELOPMENT&#39;) is not None</code></pre>
 </details>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
+<dt><code class="name"><a title="app.kubernetes_api" href="kubernetes_api.html">app.kubernetes_api</a></code></dt>
+<dd>
+<div class="desc"><p>Return Kubernetes API instance.</p></div>
+</dd>
 <dt><code class="name"><a title="app.main" href="main.html">app.main</a></code></dt>
 <dd>
 <div class="desc"><p>Provide Flask application.</p></div>
@@ -59,6 +67,7 @@ __version__ = &#39;0.1.0&#39;</code></pre>
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
+<li><code><a title="app.kubernetes_api" href="kubernetes_api.html">app.kubernetes_api</a></code></li>
 <li><code><a title="app.main" href="main.html">app.main</a></code></li>
 </ul>
 </li>
