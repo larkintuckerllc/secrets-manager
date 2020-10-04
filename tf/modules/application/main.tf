@@ -18,6 +18,24 @@ resource "kubernetes_service_account" "this" {
   }
 }
 
+# TODO: SHRINK AUTH
+resource "kubernetes_role_binding" "this" {
+  metadata {
+    name      = local.instance
+    namespace = "default"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.this.metadata[0].name
+    namespace = "default"
+  }
+}
+
 resource "kubernetes_deployment" "this" {
   lifecycle {
     ignore_changes = [spec[0].template[0].spec[0].container[0].image]
