@@ -1,4 +1,4 @@
-"""Return Kubernetes API instance."""
+"""Manage Kubernetes API instance."""
 from kubernetes import client
 
 from app import development
