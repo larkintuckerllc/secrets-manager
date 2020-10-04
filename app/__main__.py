@@ -1,3 +1,4 @@
+"""Run Flask application in debug mode."""
 from app import main
 
 
