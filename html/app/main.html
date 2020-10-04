@@ -28,29 +28,63 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Provide Flask application.&#34;&#34;&#34;
-from flask import Flask
+import json
+
+from flask import abort, Flask
 from kubernetes.client import rest
-from pprint import pprint
 
 from app import kubernetes_api
 
-
-# TODO: WORRY ABOUT UPDATED SECRET
-# TODO: MOVE TO CORRECT API CALL
-api_instance = kubernetes_api.get_instance()
-try:
-    api_response = api_instance.get_api_group()
-    pprint(api_response)
-except rest.ApiException as e:
-    print(&#34;Exception when calling AdmissionregistrationApi-&gt;get_api_group: %s\n&#34; % e)
 
 app = Flask(__name__)
 
 
 @app.route(&#39;/&#39;)
 def hello_world():
-    &#34;&#34;&#34;Implement placeholder Flask route.&#34;&#34;&#34;
-    return &#39;Hello, World 2!&#39;</code></pre>
+    &#34;&#34;&#34;Execute health check.&#34;&#34;&#34;
+    return &#39;healthy&#39;
+
+
+# READ CONFIGMAPS
+
+def item_to_configmap(item):
+    &#34;&#34;&#34;Parse item into ConfigMap.&#34;&#34;&#34;
+    return ({
+        &#39;name&#39;: item.metadata.name,
+        &#39;data&#39;: item.data,
+    })
+
+
+def api_to_configmaps(api_instance):
+    &#34;&#34;&#34;API to ConfigMaps.&#34;&#34;&#34;
+    response = api_instance.list_namespaced_config_map(&#39;default&#39;)
+    configmaps = list(map(item_to_configmap, response.items))
+    return configmaps
+
+
+@app.route(&#39;/configmaps&#39;)
+def get_configmaps():
+    &#34;&#34;&#34;Read ConfigMaps.&#34;&#34;&#34;
+    api_instance = kubernetes_api.get_instance()
+    try:
+        configmaps = api_to_configmaps(api_instance)
+        return json.dumps(configmaps)
+    except rest.ApiException:
+        kubernetes_api.refresh_instance()
+        api_instance = kubernetes_api.get_instance()
+        try:
+            configmaps = api_to_configmaps(api_instance)
+            return json.dumps(configmaps)
+        except rest.ApiException:
+            abort(500)
+
+# DELETE CONFIGMAPS
+
+# TODO: Implement
+
+# CREATE CONFIGMAPS
+
+# TODO: Implement</code></pre>
 </details>
 </section>
 <section>
@@ -60,19 +94,78 @@ def hello_world():
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="app.main.api_to_configmaps"><code class="name flex">
+<span>def <span class="ident">api_to_configmaps</span></span>(<span>api_instance)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>API to ConfigMaps.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def api_to_configmaps(api_instance):
+    &#34;&#34;&#34;API to ConfigMaps.&#34;&#34;&#34;
+    response = api_instance.list_namespaced_config_map(&#39;default&#39;)
+    configmaps = list(map(item_to_configmap, response.items))
+    return configmaps</code></pre>
+</details>
+</dd>
+<dt id="app.main.get_configmaps"><code class="name flex">
+<span>def <span class="ident">get_configmaps</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Read ConfigMaps.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@app.route(&#39;/configmaps&#39;)
+def get_configmaps():
+    &#34;&#34;&#34;Read ConfigMaps.&#34;&#34;&#34;
+    api_instance = kubernetes_api.get_instance()
+    try:
+        configmaps = api_to_configmaps(api_instance)
+        return json.dumps(configmaps)
+    except rest.ApiException:
+        kubernetes_api.refresh_instance()
+        api_instance = kubernetes_api.get_instance()
+        try:
+            configmaps = api_to_configmaps(api_instance)
+            return json.dumps(configmaps)
+        except rest.ApiException:
+            abort(500)</code></pre>
+</details>
+</dd>
 <dt id="app.main.hello_world"><code class="name flex">
 <span>def <span class="ident">hello_world</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Implement placeholder Flask route.</p></div>
+<div class="desc"><p>Execute health check.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@app.route(&#39;/&#39;)
 def hello_world():
-    &#34;&#34;&#34;Implement placeholder Flask route.&#34;&#34;&#34;
-    return &#39;Hello, World 2!&#39;</code></pre>
+    &#34;&#34;&#34;Execute health check.&#34;&#34;&#34;
+    return &#39;healthy&#39;</code></pre>
+</details>
+</dd>
+<dt id="app.main.item_to_configmap"><code class="name flex">
+<span>def <span class="ident">item_to_configmap</span></span>(<span>item)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parse item into ConfigMap.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def item_to_configmap(item):
+    &#34;&#34;&#34;Parse item into ConfigMap.&#34;&#34;&#34;
+    return ({
+        &#39;name&#39;: item.metadata.name,
+        &#39;data&#39;: item.data,
+    })</code></pre>
 </details>
 </dd>
 </dl>
@@ -93,7 +186,10 @@ def hello_world():
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="app.main.api_to_configmaps" href="#app.main.api_to_configmaps">api_to_configmaps</a></code></li>
+<li><code><a title="app.main.get_configmaps" href="#app.main.get_configmaps">get_configmaps</a></code></li>
 <li><code><a title="app.main.hello_world" href="#app.main.hello_world">hello_world</a></code></li>
+<li><code><a title="app.main.item_to_configmap" href="#app.main.item_to_configmap">item_to_configmap</a></code></li>
 </ul>
 </li>
 </ul>

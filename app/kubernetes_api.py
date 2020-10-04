@@ -3,15 +3,15 @@
 Development mode, i.e., DEVELOPMENT environment variable set, requires
 the following files:
 
-- ca.crt: CA Certificate
-- token: access token
+- ca.crt: Kubernetes CA certificate
+- token: Kubernetes access token
 - host: Kubernetes API URL
 """
 from kubernetes import client
 
 from app import development
 
-
+_instance = None
 if (development):
     _ssl_ca_cert_file = 'ca.crt'
     _authorization_file = 'token'
@@ -21,7 +21,6 @@ else:
     _ssl_ca_cert_file = '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
     _authorization_file = '/var/run/secrets/kubernetes.io/serviceaccount/token'
     _host = 'https://kubernetes.default'
-_instance = None
 
 
 def refresh_instance():

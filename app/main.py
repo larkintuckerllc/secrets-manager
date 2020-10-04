@@ -1,9 +1,10 @@
 """Provide Flask application."""
-from flask import Flask
+import json
+
+from flask import abort, Flask
 from kubernetes.client import rest
 
 from app import kubernetes_api
-import pprint
 
 
 app = Flask(__name__)
@@ -17,19 +18,19 @@ def hello_world():
 
 # READ CONFIGMAPS
 
-def test(item):
-    """TODO."""
+def item_to_configmap(item):
+    """Parse item into ConfigMap."""
     return ({
         'name': item.metadata.name,
         'data': item.data,
     })
 
 
-def ph(api_instance):
-    """TODO."""
+def api_to_configmaps(api_instance):
+    """API to ConfigMaps."""
     response = api_instance.list_namespaced_config_map('default')
-    configmaps = list(map(test, response.items))
-    pprint.pprint(configmaps)
+    configmaps = list(map(item_to_configmap, response.items))
+    return configmaps
 
 
 @app.route('/configmaps')
@@ -37,13 +38,21 @@ def get_configmaps():
     """Read ConfigMaps."""
     api_instance = kubernetes_api.get_instance()
     try:
-        ph(api_instance)
-        return 'success'
+        configmaps = api_to_configmaps(api_instance)
+        return json.dumps(configmaps)
     except rest.ApiException:
         kubernetes_api.refresh_instance()
         api_instance = kubernetes_api.get_instance()
         try:
-            ph(api_instance)
-            return 'success'
-        except rest.ApiException as e:
-            return ("%s" % e)
+            configmaps = api_to_configmaps(api_instance)
+            return json.dumps(configmaps)
+        except rest.ApiException:
+            abort(500)
+
+# DELETE CONFIGMAPS
+
+# TODO: Implement
+
+# CREATE CONFIGMAPS
+
+# TODO: Implement
