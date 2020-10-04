@@ -7,6 +7,17 @@ locals {
   version  = "0.1.0"
 }
 
+resource "kubernetes_service_account" "this" {
+  metadata {
+    name = local.instance
+    labels = {
+      "app.kubernetes.io/instance" = local.instance
+      "app.kubernetes.io/name"     = local.name
+      "app.kubernetes.io/version"  = local.version
+    }
+  }
+}
+
 resource "kubernetes_deployment" "this" {
   lifecycle {
     ignore_changes = [spec[0].template[0].spec[0].container[0].image]
@@ -36,6 +47,7 @@ resource "kubernetes_deployment" "this" {
         }
       }
       spec {
+        automount_service_account_token  = true
         container {
           image             = local.image
           image_pull_policy = "Always"
@@ -74,6 +86,7 @@ resource "kubernetes_deployment" "this" {
             run_as_user                = 1000 # ISSUE: https://github.com/hashicorp/terraform-provider-kubernetes/issues/695
           }
         }
+        service_account_name             = kubernetes_service_account.this.metadata[0].name
       }
     }
   }
