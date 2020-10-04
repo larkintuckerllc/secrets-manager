@@ -5,5 +5,5 @@ Compatible with tiangolo/meinheld-gunicorn:python3.8 Docker image.
 import os
 
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 development = os.environ.get('DEVELOPMENT') is not None
