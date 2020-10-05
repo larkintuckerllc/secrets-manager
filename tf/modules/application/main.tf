@@ -18,7 +18,23 @@ resource "kubernetes_service_account" "this" {
   }
 }
 
-# TODO: SHRINK AUTH
+resource "kubernetes_cluster_role" "this" {
+  metadata {
+    name = local.instance
+    labels = {
+      "app.kubernetes.io/instance" = local.instance
+      "app.kubernetes.io/name"     = local.name
+      "app.kubernetes.io/version"  = local.version
+    }
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["configmaps"]
+    verbs      = ["create", "delete", "get", "list"]
+  }
+}
+
 resource "kubernetes_role_binding" "this" {
   metadata {
     name      = local.instance
@@ -27,7 +43,7 @@ resource "kubernetes_role_binding" "this" {
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = "cluster-admin"
+    name      = kubernetes_cluster_role.this.metadata[0].name
   }
   subject {
     kind      = "ServiceAccount"
