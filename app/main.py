@@ -20,10 +20,10 @@ def health_check():
 
 def item_to_configmap(item):
     """Parse item into ConfigMap."""
-    return ({
+    return {
         'name': item.metadata.name,
         'data': item.data,
-    })
+    }
 
 
 def api_to_configmaps(api_instance):

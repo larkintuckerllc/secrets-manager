@@ -12,7 +12,7 @@ from kubernetes import client
 from app import development
 
 _instance = None
-if (development):
+if development:
     _ssl_ca_cert_file = 'ca.crt'
     _authorization_file = 'token'
     with open('host', 'r') as _f:

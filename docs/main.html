@@ -49,10 +49,10 @@ def health_check():
 
 def item_to_configmap(item):
     &#34;&#34;&#34;Parse item into ConfigMap.&#34;&#34;&#34;
-    return ({
+    return {
         &#39;name&#39;: item.metadata.name,
         &#39;data&#39;: item.data,
-    })
+    }
 
 
 def api_to_configmaps(api_instance):
@@ -162,10 +162,10 @@ def health_check():
 </summary>
 <pre><code class="python">def item_to_configmap(item):
     &#34;&#34;&#34;Parse item into ConfigMap.&#34;&#34;&#34;
-    return ({
+    return {
         &#39;name&#39;: item.metadata.name,
         &#39;data&#39;: item.data,
-    })</code></pre>
+    }</code></pre>
 </details>
 </dd>
 </dl>
